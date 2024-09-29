@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 22:00:10 by juagomez          #+#    #+#             */
-/*   Updated: 2024/09/29 22:11:53 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/09/29 22:57:37 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,11 @@ void dealloc(t_list **list, t_list *clean_node, char *buffer)
 	t_list *tmp_list;
 
 	// VALIDACION CONTROL
-	if (list ==  NULL)
+	if (*list ==  NULL)
 		return ;
 	
 	// CICLO PARA RECORRER PTR Listas y LIMPIARLAS
-	while (*list != NULL)
+	while (*list)
 	{
 		tmp_list = (*list)->next;
 		free((*list)->str_buffer);

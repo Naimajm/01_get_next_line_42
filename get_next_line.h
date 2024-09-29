@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 20:19:01 by juagomez          #+#    #+#             */
-/*   Updated: 2024/09/29 22:42:37 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/09/29 22:51:50 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,16 @@
 #endif
 
 // EXTERNAL LIBRARY
-# include <fcntl.h> // open
-# include <stdlib.h> // malloc(), free()
-# include <unistd.h> // sleep write read
+#include <fcntl.h> // open
+#include <stdlib.h> // malloc(), free()
+#include <unistd.h> // sleep write read
+// #include <stdio.h> // printf 
 
 // NODE OF LINKED LIST
 typedef struct s_list
 {
 	char			*str_buffer;
-	struct	s_list	*next;	// pointer to next node
+	struct	s_list	*next;
 }				t_list;
 
 // INTERNAL FUNCTIONS 'get_next_line_utils.c'
@@ -50,6 +51,5 @@ void	polish_list(t_list **list);
 char	*get_line(t_list *list);
 void	create_list(t_list **list, int	fd);
 void append_buffer_to_list(t_list **list, char *buffer);
-
 
 #endif

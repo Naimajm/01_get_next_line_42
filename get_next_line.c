@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 21:59:55 by juagomez          #+#    #+#             */
-/*   Updated: 2024/09/29 22:42:32 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/09/29 23:04:03 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,16 +64,14 @@ void	polish_list(t_list **list)
 	// 1º FASE -> CARACTERES HASTA SALTO LINEA O FINAL
 	while (last_node->str_buffer[index_list] != '\0' &&
 			last_node->str_buffer[index_list] != '\n')
-	{
 		index_list++;
-	}
 	// 2º FASE -> COPIAR CHARS DESPUES DE SALTO LINEA EN BUFFER
 	while (last_node->str_buffer[index_list] != '\0' &&
-			last_node->str_buffer[index_list + 1] != 0)
+			last_node->str_buffer[index_list++] != '\0')
 	{
 		buffer[index_buffer] = last_node->str_buffer[index_list];
 		index_buffer++;
-		index_list++;
+
 	}
 	buffer[index_buffer] = '\0';
 	// asigno buffer en el str_buffer del nuevo nodo
