@@ -6,11 +6,11 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 22:00:10 by juagomez          #+#    #+#             */
-/*   Updated: 2024/09/29 21:28:50 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/09/29 22:11:53 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <get_next_line.h>
+#include "get_next_line.h"
 
 // LIMPIAR TODOS LOS NODOS DE LISTA VINCULADA + VINCULO LISTA CON NUEVO NODO
 void dealloc(t_list **list, t_list *clean_node, char *buffer)
@@ -49,7 +49,7 @@ void	copy_string(t_list *list, char *buffer_str)
 
 	// VALIDACION CONTROL
 	if (list == NULL)
-		return (NULL);	
+		return ;	
 	index_str = 0;
 	// CICLO LIST
 	while (list)
@@ -81,8 +81,7 @@ int	len_to_newline(t_list *list)
 
 	// VALIDACION CONTROL INPUT
 	if (list == NULL)
-		return (NULL);
-
+		return (0);
 	len = 0;
 	// CICLO LIST != NULL
 	while (list)
@@ -114,4 +113,27 @@ t_list	*find_last_node(t_list *list)
 	while (list->next != NULL)
 		list = list->next; // moverse al ptr que direcciona al siguiente nodo
 	return (list);
+}
+
+int	found_newline(t_list *list)
+{
+	int	index_list;
+
+	// VALIDACION CONTROL
+	if (list == NULL)
+		return (0);
+	
+	while (list != NULL)
+	{
+		index_list = 0;
+
+		while (list->str_buffer[index_list] != 0 && index_list < BUFFER_SIZE)
+		{
+			if (list->str_buffer[index_list] == '\n')
+				return (1);
+			index_list++;
+		}
+		list = list->next;	
+	}
+	return (0);
 }

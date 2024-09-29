@@ -6,19 +6,20 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 21:59:55 by juagomez          #+#    #+#             */
-/*   Updated: 2024/09/29 21:45:56 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/09/29 22:42:32 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <get_next_line.h>
+#include "get_next_line.h"
 
-static void	polish_list(t_list **list);
-static char	*get_line(t_list *list);
-static void	create_list(t_list **list, int	fd);
-static void append_buffer_to_list(t_list **list, char *buffer);
+void	polish_list(t_list **list);
+char	*get_line(t_list *list);
+void	create_list(t_list **list, int	fd);
+void append_buffer_to_list(t_list **list, char *buffer);
 
 char	*get_next_line(int fd)
 {
+	// VARIABLE ESTATICA !! FINAL VIDEO https://www.youtube.com/watch?v=8E9siq7apUU&ab_channel=Oceano
 	static t_list	*list = NULL;	// pointer to the list / static variables (global variable with local scope)
 	char	*next_line; // Buffer
 
@@ -43,7 +44,7 @@ char	*get_next_line(int fd)
 
 // PREPARAR LISTA VINCULADA PARA LA SIGUIENTE LINEA
 // vincular nuevo nodo donde meter el resto de los caracteres no utilizados en el buffer con el salto linea '\n'
-static void	polish_list(t_list **list)
+void	polish_list(t_list **list)
 {
 	t_list	*last_node;
 	t_list	*clean_node;
@@ -57,7 +58,7 @@ static void	polish_list(t_list **list)
 	if (buffer == NULL || clean_node == NULL)
 		return ;
 
-	last_node =  find_last_node(list); 
+	last_node =  find_last_node(*list); 
 	index_list = 0;
 	index_buffer = 0;
 	// 1º FASE -> CARACTERES HASTA SALTO LINEA O FINAL
@@ -84,7 +85,7 @@ static void	polish_list(t_list **list)
 }
 
 // CONSEGUIR LINEA HASTA SALTO DE LINEA -> UNION DE BUFFER_STR DE CADA NODO HASTA '\n'
-static char	*get_line(t_list *list)
+char	*get_line(t_list *list)
 {
 	int	str_len;
 	char	*next_str; // ptr al siguiente string
@@ -106,7 +107,7 @@ static char	*get_line(t_list *list)
 }
 
 // CREAR LISTA DE BUFFERS CON CHARS YA LEIDOS HASTA LA SIGUIENTE LINEA '\n'
-static void	create_list(t_list **list, int	fd)
+void	create_list(t_list **list, int	fd)
 {	
 	int	read_cursor; // numero de caracteres leidos (INDICE posicion ultimo caracter leido)
 	char	*buffer; // string + \0
@@ -135,7 +136,7 @@ static void	create_list(t_list **list, int	fd)
 }
 
 // AÑADIR BUFFER leido EN EL NODO DE LISTA
-static void append_buffer_to_list(t_list **list, char *buffer)
+void append_buffer_to_list(t_list **list, char *buffer)
 {
 	t_list	*new_node;
 	t_list	*last_node;
@@ -157,22 +158,32 @@ static void append_buffer_to_list(t_list **list, char *buffer)
 	new_node->next = NULL;	
 }
 
-#include <stdio.h> // printf
+/* #include <stdio.h> // printf
 
 int	main(void)
 {
-	int	fd;
+	int		fd;
 	char	*line;
-	int	lines;
+	int		lines;	
 
 	lines = 1;
-	fd = open("test.TXT", O_RDONLY);
+	fd = open("file.txt", O_RDONLY);
 
-	while ((line = get_next_line(fd)) != 0)
+	// TEST BASICO
+	char	buffer[256];
+	int	chars_read;	
+	//printf("%ld \n", read(fd, buffer, 20)); 
+	while ((chars_read = read(fd, buffer, 25)))
 	{
-		lines++;
-		printf("%d->%s \n", lines, line);
+		buffer[chars_read] = '\0';
+		printf("buffer -> %s \n", buffer);
+	}
+
+	// TEST 1
+	while ((line = get_next_line(fd)))
+	{
+		printf("%d->%s \n", lines++, line);
 	}	
 	return (0);
-}
+} */
 

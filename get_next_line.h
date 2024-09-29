@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 20:19:01 by juagomez          #+#    #+#             */
-/*   Updated: 2024/09/29 21:22:34 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/09/29 22:42:37 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 # define GET_NEXT_LINE_H
 
 // DEFINITION OF BUFFER SIZE IF IT IS NOT DEFINED IN THE COMPILATION
-# ifndef	BUFFER_SIZE
+#ifndef	BUFFER_SIZE
 #  define	BUFFER_SIZE 10
-# endif
+#endif
 
 // EXTERNAL LIBRARY
 # include <fcntl.h> // open
@@ -40,5 +40,16 @@ int	len_to_newline(t_list *list);
 
 t_list	*find_last_node(t_list *list);
 
+int	found_newline(t_list *list);
 
-# endif
+// INTERNAL FUNCTIONS 'get_next_line.c'
+
+char	*get_next_line(int fd);
+
+void	polish_list(t_list **list);
+char	*get_line(t_list *list);
+void	create_list(t_list **list, int	fd);
+void append_buffer_to_list(t_list **list, char *buffer);
+
+
+#endif
