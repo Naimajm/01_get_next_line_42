@@ -6,16 +6,16 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 21:59:55 by juagomez          #+#    #+#             */
-/*   Updated: 2024/09/29 23:04:03 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/09/30 18:54:41 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-void	polish_list(t_list **list);
-char	*get_line(t_list *list);
-void	create_list(t_list **list, int	fd);
-void append_buffer_to_list(t_list **list, char *buffer);
+static void	polish_list(t_list **list);
+static char	*get_line(t_list *list);
+static void	create_list(t_list **list, int	fd);
+static void append_buffer_to_list(t_list **list, char *buffer);
 
 char	*get_next_line(int fd)
 {
@@ -24,7 +24,7 @@ char	*get_next_line(int fd)
 	char	*next_line; // Buffer
 
 	// VALIDATION -> positive number with fd // control to che if file(buffer) can't be open -> return -1) // Size Buffer_size 0 or negative
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &next_line, 0) < 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 
 	// CREAR LISTA DE BUFFERS CON CHARS YA LEIDOS
@@ -37,14 +37,14 @@ char	*get_next_line(int fd)
 	// BUSCAR LINEA DE LISTA ENLAZADA
 	next_line = get_line(list);
 
-	// PREPARA LISTA PARA LA SIGUINTE LLAMADA 
+	// PREPARA LISTA PARA LA SIGUIENTE LLAMADA 
 	polish_list(&list);
 	return (next_line);
 }
 
 // PREPARAR LISTA VINCULADA PARA LA SIGUIENTE LINEA
 // vincular nuevo nodo donde meter el resto de los caracteres no utilizados en el buffer con el salto linea '\n'
-void	polish_list(t_list **list)
+static void	polish_list(t_list **list)
 {
 	t_list	*last_node;
 	t_list	*clean_node;
@@ -71,7 +71,6 @@ void	polish_list(t_list **list)
 	{
 		buffer[index_buffer] = last_node->str_buffer[index_list];
 		index_buffer++;
-
 	}
 	buffer[index_buffer] = '\0';
 	// asigno buffer en el str_buffer del nuevo nodo
@@ -83,7 +82,7 @@ void	polish_list(t_list **list)
 }
 
 // CONSEGUIR LINEA HASTA SALTO DE LINEA -> UNION DE BUFFER_STR DE CADA NODO HASTA '\n'
-char	*get_line(t_list *list)
+static char	*get_line(t_list *list)
 {
 	int	str_len;
 	char	*next_str; // ptr al siguiente string
@@ -105,7 +104,7 @@ char	*get_line(t_list *list)
 }
 
 // CREAR LISTA DE BUFFERS CON CHARS YA LEIDOS HASTA LA SIGUIENTE LINEA '\n'
-void	create_list(t_list **list, int	fd)
+static void	create_list(t_list **list, int	fd)
 {	
 	int	read_cursor; // numero de caracteres leidos (INDICE posicion ultimo caracter leido)
 	char	*buffer; // string + \0
@@ -134,7 +133,7 @@ void	create_list(t_list **list, int	fd)
 }
 
 // AÑADIR BUFFER leido EN EL NODO DE LISTA
-void append_buffer_to_list(t_list **list, char *buffer)
+static void append_buffer_to_list(t_list **list, char *buffer)
 {
 	t_list	*new_node;
 	t_list	*last_node;
@@ -165,7 +164,8 @@ int	main(void)
 	int		lines;	
 
 	lines = 1;
-	fd = open("file.txt", O_RDONLY);
+	// TEST 1
+	fd = open("test.txt", O_RDONLY);
 
 	// TEST BASICO
 	char	buffer[256];
@@ -177,11 +177,18 @@ int	main(void)
 		printf("buffer -> %s \n", buffer);
 	}
 
-	// TEST 1
+	// TEST 2
 	while ((line = get_next_line(fd)))
 	{
 		printf("%d->%s \n", lines++, line);
+		free(line);
 	}	
+
+	// TEST fd-> input standar fd=1
+	//while ((line = get_next_line(0)))
+	//{
+	//	printf("%d->%s \n", lines++, line);
+	//	free(line);
+	//}
 	return (0);
 } */
-
