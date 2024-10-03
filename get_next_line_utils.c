@@ -6,134 +6,99 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 22:00:10 by juagomez          #+#    #+#             */
-/*   Updated: 2024/09/30 18:55:35 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/03 11:42:24 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-// LIMPIAR TODOS LOS NODOS DE LISTA VINCULADA + VINCULO LISTA CON NUEVO NODO
-void dealloc(t_list **list, t_list *clean_node, char *buffer)
-{
-	t_list *tmp_list;
-
-	// VALIDACION CONTROL
-	if (*list ==  NULL)
-		return ;
-	
-	// CICLO PARA RECORRER PTR Listas y LIMPIARLAS
-	while (*list)
-	{
-		tmp_list = (*list)->next;
-		free((*list)->str_buffer);
-		free(*list);
-		*list = tmp_list;
-	}
-	*list = NULL;
-	// SI EXISTE CHARS EN BUFFER CLEAN_NODE -> COPIA EN LISTA
-	if (clean_node->str_buffer[0] != 0)
-		*list = clean_node;
-	// LIBERAR MEMORIA BUFFER + CLEAN_NODE
-	else
-	{
-		free(buffer);
-		free(clean_node);
-	}
-}
-
-// copiar string dentro de list hasta salto linea '\n'
-void	copy_string(t_list *list, char *buffer_str)
-{
-	int	index_list;
-	int	index_str;
-
-	// VALIDACION CONTROL
-	if (list == NULL)
-		return ;	
-	index_str = 0;
-	// CICLO LIST
-	while (list)
-	{
-		index_list = 0; // inicializado en 0 para cada nodo
-		while (list->str_buffer[index_list] != 0)
-		{
-			// copiar en buffer hasta salto linea
-			if (list->str_buffer[index_list] == '\n')
-			{
-				buffer_str[index_str] = '\n';
-				buffer_str[index_str + 1] = '\0';
-				return ;
-			}
-			buffer_str[index_str] = list->str_buffer[index_list];
-			index_list++;
-			index_str++;
-		}
-		list = list-> next;		
-	}
-	buffer_str[index_str] = '\0';	
-}
-
-// CALCULAR LONGITUD LINEA HASTA ENCONTRAR UN SALTO LINEA '\n'
-int	len_to_newline(t_list *list)
+int	ft_strlcpy(char *dest, const char *src, unsigned int destsize)
 {
 	int	index;
-	int	len;
+	int	src_len;
 
-	// VALIDACION CONTROL INPUT
-	if (list == NULL)
-		return (0);
-	len = 0;
-	// CICLO LIST != NULL
-	while (list)
+	index = 0;
+	src_len = ft_strlen(src);
+	if (destsize != 0)
 	{
-		index = 0; // inicializar en 0 para comienzo al nuevo nodo
-		// ciclo por caracter de cada buffer guardado
-		while (list->str_buffer[index] != 0)
+		while (src[index] != 0 && index - (destsize - 1))
 		{
-			// VERIFICAR CARACTER '\n'
-			if (list->str_buffer[index] == '\n')
-			{
-				len++; // longitud incluye l salto de linea
-				return (len);
-			}
-			len++;
+			dest[index] = src[index];
 			index++;
 		}
-		// ptr que apuunta al siguiente nodo
-		list = list->next;
+		dest[index] = '\0';
 	}
-	return (len);	
+	return (src_len);	
 }
 
-t_list	*find_last_node(t_list *list)
+void	*ft_calloc(size_t count, size_t size)
 {
-	// VALIDACION CONTROL
-	if (list == NULL)
+	char	*ptr;
+	size_t	index;
+
+	index = 0;
+	ptr = (char	*)malloc(count * size);
+	if (!ptr)
 		return (NULL);
-	while (list->next != NULL)
-		list = list->next; // moverse al ptr que direcciona al siguiente nodo
-	return (list);
+	while (index < (count * size))
+	{	
+		ptr[index] = 0;
+		index++;
+	}
+	return ((void	*)ptr);
 }
 
-int	found_newline(t_list *list)
+char	*ft_strjoin(char const *str1, char const *str2)
 {
-	int	index_list;
+	char	*str;
+	int	str1_index;
+	int	str2_index;
+	int str_joined_index;
 
-	// VALIDACION CONTROL
-	if (list == NULL)
-		return (0);
-	
-	while (list != NULL)
+	str1_index = 0;
+	str2_index = 0;
+	str_joined_index = 0;
+	str = malloc((ft_strlen(str1) + ft_strlen(str2) + 1) * sizeof(char));
+	if (!str || (!str1 && !str2))
+		return (NULL);
+	while (str1[str1_index] != '\0')
 	{
-		index_list = 0;
-
-		while (list->str_buffer[index_list] != 0 && index_list < BUFFER_SIZE)
-		{
-			if (list->str_buffer[index_list] == '\n')
-				return (1);
-			index_list++;
-		}
-		list = list->next;	
+		str[str_joined_index] = str1[str1_index];
+		str_joined_index++;
+		str1_index++;
 	}
+	while (str2[str2_index] != '\0')
+	{
+		str[str_joined_index] = str2[str2_index];
+		str_joined_index++;
+		str2_index++;
+	}
+	str[str_joined_index] = '\0';
+	return (str);
+}
+
+int	ft_strlen(const char	*str)
+{
+	int	count;
+
+	count = 0;
+	while (str[count] != '\0')
+		count++;
+	return (count);
+}
+
+char	*ft_strchr(const char *str, int character)
+{
+	int	index;
+
+	index = 0;
+	while (str[index] != '\0')
+	{
+		if (str[index] == (char)character)
+			return ((char	*)(str + index));
+		index++;
+	}
+	if (str[index] != '\0' && str[index] == (char)character)
+		return ((char *)(str + index));
 	return (0);
 }

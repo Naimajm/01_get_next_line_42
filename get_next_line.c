@@ -6,189 +6,214 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 21:59:55 by juagomez          #+#    #+#             */
-/*   Updated: 2024/09/30 18:54:41 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/03 19:01:00 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static void	polish_list(t_list **list);
-static char	*get_line(t_list *list);
-static void	create_list(t_list **list, int	fd);
-static void append_buffer_to_list(t_list **list, char *buffer);
+static char	*get_final_line(char *buffer);
+static char	*give_line(char *buffer);
+static char	*read_file(int	fd, char *text);
 
+static char	*ft_joined(char	*buffer, char	*src);
+
+/** 
+* @brief Comprueba si un carácter determinado es un carácter alfabético.
+* @param charac: carácter a comprobar.
+* @returns -> Si check es correcto, devuelve valor distinto de cero.
+Si check es incorrecto, devuelve 0.
+*/
 char	*get_next_line(int fd)
 {
 	// VARIABLE ESTATICA !! FINAL VIDEO https://www.youtube.com/watch?v=8E9siq7apUU&ab_channel=Oceano
-	static t_list	*list = NULL;	// pointer to the list / static variables (global variable with local scope)
-	char	*next_line; // Buffer
+	static char	*buffer;
+	char	*next_line; 
 
-	// VALIDATION -> positive number with fd // control to che if file(buffer) can't be open -> return -1) // Size Buffer_size 0 or negative
+	// VALIDATION -> positive number with fd // control to check if file(buffer) can't be open -> return -1) // Size Buffer_size 0 or negative
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-
-	// CREAR LISTA DE BUFFERS CON CHARS YA LEIDOS
-	create_list(&list, fd); // &list -> direccion de la lista
-
+	buffer = read_file(fd, buffer);
 	// VALIDATION
-	if (list == NULL)
-		return (NULL); // no hay siguiente linea
-
-	// BUSCAR LINEA DE LISTA ENLAZADA
-	next_line = get_line(list);
-
-	// PREPARA LISTA PARA LA SIGUIENTE LLAMADA 
-	polish_list(&list);
+	if (buffer == NULL)
+		return (NULL);
+	// CONSEGUIR LINEA NETA CON SALTO LINEA INCLUIDO
+	next_line = give_line(buffer);
+	// CONSEGUIR TEXTO DESDE SALTO LINEA
+	buffer = get_final_line(buffer);
 	return (next_line);
 }
 
-// PREPARAR LISTA VINCULADA PARA LA SIGUIENTE LINEA
-// vincular nuevo nodo donde meter el resto de los caracteres no utilizados en el buffer con el salto linea '\n'
-static void	polish_list(t_list **list)
+/** 
+* @brief Conseguir linea texto desde salto linea incluida hasta final del buffer.
+* @param buffer	char*: linea bruta.
+* @returns -> Si check es correcto, devuelve linea texto restante.
+Si check es incorrecto, devuelve NULL.
+*/
+static char	*get_final_line(char *buffer)
+{	
+	int	index_buffer; 
+	int len_buffer;
+	int	index_final_line;
+	char *final_line;
+
+	index_buffer = 0;
+	index_final_line = 0;
+	// LLEGAR HASTA SALTO LINEA
+	while (buffer[index_buffer] != '\0' && buffer[index_buffer] != '\n')
+		index_buffer++;
+	//VALIDACION BUFFER -> si no hay nadxa despues del salto linea
+	if (!buffer[index_buffer])
+	{
+		free(buffer);
+		return (NULL);
+	}
+	// CALCULAR TAMAÑO RESTANTE NUM CHARS HASTA FINAL BUFFER
+	len_buffer = ft_strlen(buffer);
+	// RESERVA MEMORIA TAMAÑO (TOTAL - INDEX + '\0')
+	final_line = ft_calloc(len_buffer - index_buffer + 1, sizeof(char));
+	// VALIDACION CONTROL
+	if(!final_line)
+		return (NULL);
+	// incrementar indice para no copiar salto linea
+	index_buffer++;
+	// COPIAR CHARS BUFFER DESDE '\n' en FINAL_LINE
+	while (buffer[index_buffer] != '\0')
+	{
+		final_line[index_final_line] = buffer[index_buffer];
+		index_buffer++;
+		index_final_line++;
+	}
+	final_line[index_final_line] = '\0';
+	free(buffer);
+	return (final_line);
+}
+
+/** 
+* @brief Conseguir linea completa neta con salto linea incluida.
+* @param buffer	char*: linea bruta.
+* @returns -> Si check es correcto, devuelve linea texto neta.
+Si check es incorrecto, devuelve NULL.
+*/
+static char	*give_line(char *buffer)
 {
-	t_list	*last_node;
-	t_list	*clean_node;
-	int	index_list;
-	int	index_buffer;
+	int	index;
+	char	*new_line;
+
+	index = 0;
+	// VALIDACION CONTROL
+	if (!buffer[index])
+		return (NULL);
+	// AVANZAR HASTA SALTO LINEA
+	while (buffer[index] != '\0' && buffer[index] != '\n')
+		index++;
+	// reserva memoria para string anterior a salto de linea +salto linea + terminador nulo
+	new_line = ft_calloc(index + 1 + 1, sizeof(char));
+	// VALIDACION 
+	if (!new_line)
+		return (NULL);
+	// copiar en newline la linea bruta hasta el indice + salto linea incluido +  terminado nulo
+	ft_strlcpy(new_line, buffer, index + 1 + 1);
+	return (new_line);	
+}
+
+/** 
+* @brief Copia linea completa hasta salto linea '\n' en buffers con tamaño BUFFER_SIZE.
+* @param fd		fd: identicador id del file descriptor.
+* @param text	*text: texto .
+* @returns -> Si check es correcto, devuelve linea texto en bruto.
+Si check es incorrecto, devuelve NULL.
+*/
+static char	*read_file(int	fd, char *text)
+{
+	int	char_to_read;  // indice caracter donde se ha quedado la lectura del archivo de la funcion 'read'
 	char	*buffer;
 
-	buffer = malloc(BUFFER_SIZE + 1);
-	clean_node = malloc(sizeof(t_list));
-	// VALIDACION CONTROL
-	if (buffer == NULL || clean_node == NULL)
-		return ;
-
-	last_node =  find_last_node(*list); 
-	index_list = 0;
-	index_buffer = 0;
-	// 1º FASE -> CARACTERES HASTA SALTO LINEA O FINAL
-	while (last_node->str_buffer[index_list] != '\0' &&
-			last_node->str_buffer[index_list] != '\n')
-		index_list++;
-	// 2º FASE -> COPIAR CHARS DESPUES DE SALTO LINEA EN BUFFER
-	while (last_node->str_buffer[index_list] != '\0' &&
-			last_node->str_buffer[index_list++] != '\0')
-	{
-		buffer[index_buffer] = last_node->str_buffer[index_list];
-		index_buffer++;
-	}
-	buffer[index_buffer] = '\0';
-	// asigno buffer en el str_buffer del nuevo nodo
-	clean_node->str_buffer = buffer;
-	clean_node->next = NULL; // inicializar ptr hacia terminador nulo	
-
-	// LIMPIAR TODOS LOS NODOS DE LISTA VINCULADA + VINCULO LISTA CON NUEVO NODO
-	dealloc(list, clean_node, buffer);
-}
-
-// CONSEGUIR LINEA HASTA SALTO DE LINEA -> UNION DE BUFFER_STR DE CADA NODO HASTA '\n'
-static char	*get_line(t_list *list)
-{
-	int	str_len;
-	char	*next_str; // ptr al siguiente string
-
-	// VALIDACION LISTA NULA
-	if (list == NULL)
+	// VALIDACION 
+	if (!text)
+		text = ft_calloc(1, 1);
+	// RESERVA MEMORIA EN BUFFER
+	buffer = ft_calloc((BUFFER_SIZE + 1), sizeof(char));
+	// validacion reserva memoria
+	if (!buffer)
 		return (NULL);
-	
-	// FUNCION AUXILIAR -> CONTAR CHARS HASTA final linea '\n' para reservar espacio de ese tamaño con malloc
-	str_len = len_to_newline(list);
-	next_str = malloc(str_len + 1);
-	// validacion reserva malloc
-	if (next_str == NULL)
-		return (NULL);
-	
-	// Copiar string en el buffer 'next_str' y retornarlo
-	copy_string(list, next_str);
-	return (next_str);
-}
-
-// CREAR LISTA DE BUFFERS CON CHARS YA LEIDOS HASTA LA SIGUIENTE LINEA '\n'
-static void	create_list(t_list **list, int	fd)
-{	
-	int	read_cursor; // numero de caracteres leidos (INDICE posicion ultimo caracter leido)
-	char	*buffer; // string + \0
-
-	// escanear line por si existe salto linea '\n' presente
-	// itera por cada nueva linea -> lee linea con tamaño buffer hasta que encuentre linea + guarda buffer leido en nodo de lista
-	while (!found_newline(*list))
+	char_to_read = 1;
+	// GUARDA STRING DEL BUFFER EN TEXTO HASTA ENCONTRAR SALTO LINEA O NO LEER NADA (char_to_read = 0)
+	while (char_to_read > 0)
 	{
-		buffer = malloc(BUFFER_SIZE + 1); // reserva memoria con tamaño buffer + \0
-		// VALIDATION -> control si buffer creado
-		if (buffer == NULL)
-			return ;
-		// funcion devuelver num caracteres leidos
-		read_cursor = read(fd, buffer, BUFFER_SIZE);
-
-		// VALIDATION char_read = 0 -> no ha leido nada (no queda nada por leer) -> FICHERO TERMINADO DE LEER
-		if (!read_cursor)
+		// lee contenido hasta tamaño BUFFER_SIZE
+		char_to_read = read(fd, buffer, BUFFER_SIZE); // indice caracter leido del texto
+		// VALIDACION -> NO LECTURA DE CARACTERES O FINAL TEXTO
+		if (char_to_read == -1)
 		{
+			free(text);
 			free(buffer);
-			return ;
+			return (NULL);
 		}
-		buffer[read_cursor] = '\0';
-		// FUNCION APPEND -> AÑADIR BUFFER EN EL NODO DE LISTA
-		append_buffer_to_list(list, buffer);
-	}	
+		buffer[char_to_read] = '\0'; // terminador nulo string
+		//printf("%d -> %s \n", char_to_read, buffer);
+		// GUARDA CONTENIDO BUFFER + EL RESTO DE TEXTO ANTERIOR EN NUEVO CHAR!!!
+		text = ft_joined(text, buffer);
+		// CONDICION -> CORTA CUANDO SE ENCUENTRE CARACTER SALTO LINEA '\N' EN EL TEXTO
+		if (ft_strchr(text, '\n'))
+			break ;
+	}
+	free(buffer);
+	return (text);	
 }
 
-// AÑADIR BUFFER leido EN EL NODO DE LISTA
-static void append_buffer_to_list(t_list **list, char *buffer)
+/** 
+* @brief Une en nuevo string los caracteres del buffer y del string 'src'.
+Libera bufffer despues de la union.
+* @param char	*buffer: string para almacenamiento temporal .
+* @param char	*text: string.
+* @returns -> char *-> devuelve string con la union de ambos string.
+Si check es incorrecto, devuelve NULL.
+*/
+static char	*ft_joined(char	*buffer, char	*src)
 {
-	t_list	*new_node;
-	t_list	*last_node;
-
-	// CREACION NUEVO NODO y encontrar ultimo nodo lista para conectar nuevo nodo
-	last_node = find_last_node(*list);
-	new_node = malloc(sizeof(t_list));
-	// VALIDATION reserva memoria
-	if(new_node == NULL)
-		return ;
-	// VALIDACION 1º LINEA -> si last_node es nulo (no hay guardado ningun buffer leido)
-	if(last_node == NULL)
-		*list = new_node; // apunta puntero *list al nuevo nodo creado
-	else
-		last_node->next = new_node; // conecta puntero next al nuevo nodo
-
-	// ASIGNA BUFFER LEIDO AL NUEVO NODO + inicializa puntero next en nulo
-	new_node->str_buffer = buffer;
-	new_node->next = NULL;	
+	char	*dest;
+	
+	if (!buffer && !src)
+		return (NULL);
+	dest = ft_strjoin(buffer, src);
+	free(buffer);
+	return (dest);
 }
-
-/* #include <stdio.h> // printf
 
 int	main(void)
 {
-	int		fd;
-	char	*line;
-	int		lines;	
+	int		fd = open("text_02.txt", O_RDONLY);
+	
+	/* int index_read;
+	char	*buffer;
+	char	*new_line;
+	char	*final_line;
 
-	lines = 1;
-	// TEST 1
-	fd = open("test.txt", O_RDONLY);
+	// 1º COPIAR LINEA COMPLETA HASTA L BUFFER QUE INCLUYE SALTO LINEA -> READ_FILE()
+	index_read = read(fd, malloc(10 + 1), 10);
+	buffer = read_file(fd, buffer);
+	//printf("tamaño buffer -> %d \n", index_read);
+	//printf("Linea bruta -> %s<-final\n", buffer);
 
-	// TEST BASICO
-	char	buffer[256];
-	int	chars_read;	
-	//printf("%ld \n", read(fd, buffer, 20)); 
-	while ((chars_read = read(fd, buffer, 25)))
+	// 2º CONSEGUIR LINEA NETA HASTA SALTO LINEA -> GIVE_LINE()
+	new_line = give_line(buffer);
+	//printf("Linea neta -> %s \n", new_line);
+
+	// 3º CONSEGUIR FINAL LINEA TEXTO DESPUES DE SALTO LINEA
+	final_line = get_final_line(buffer);
+	printf("final linea -> %s \n", final_line);
+
+	free(buffer);
+	free(new_line);
+	free(final_line); */
+
+	// 4º TEST FUNCION GET_NEXT_LINE
+	char	*next_line;
+	while (next_line = get_next_line(fd))
 	{
-		buffer[chars_read] = '\0';
-		printf("buffer -> %s \n", buffer);
+		printf("%s", next_line);
+		free(next_line);
 	}
-
-	// TEST 2
-	while ((line = get_next_line(fd)))
-	{
-		printf("%d->%s \n", lines++, line);
-		free(line);
-	}	
-
-	// TEST fd-> input standar fd=1
-	//while ((line = get_next_line(0)))
-	//{
-	//	printf("%d->%s \n", lines++, line);
-	//	free(line);
-	//}
 	return (0);
-} */
+}
