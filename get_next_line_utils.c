@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 22:00:10 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/03 11:42:24 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/03 22:39:29 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,15 +31,34 @@ int	ft_strlcpy(char *dest, const char *src, unsigned int destsize)
 	return (src_len);	
 }
 
+/* char	*ft_strncpy(char *dest, const char *src, size_t n)
+{
+	size_t	i;
+
+	i = 0;
+	while (src[i] != '\0' && i < n)
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	while (i < n)
+	{
+		dest[i] = '\0';
+		i++;
+	}
+	return (dest);
+} */
+
 void	*ft_calloc(size_t count, size_t size)
 {
 	char	*ptr;
 	size_t	index;
 
 	index = 0;
-	ptr = (char	*)malloc(count * size);
+	//ptr = (char	*)malloc(count * size);
+	ptr = malloc(count * size);
 	if (!ptr)
-		return (NULL);
+		return (NULL);		
 	while (index < (count * size))
 	{	
 		ptr[index] = 0;
@@ -82,6 +101,8 @@ int	ft_strlen(const char	*str)
 	int	count;
 
 	count = 0;
+	if (!str)
+		return (0);
 	while (str[count] != '\0')
 		count++;
 	return (count);

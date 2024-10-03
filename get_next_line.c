@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 21:59:55 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/03 19:01:00 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/03 22:43:32 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 static char	*get_final_line(char *buffer);
 static char	*give_line(char *buffer);
 static char	*read_file(int	fd, char *text);
-
 static char	*ft_joined(char	*buffer, char	*src);
 
 /** 
@@ -32,10 +31,14 @@ char	*get_next_line(int fd)
 
 	// VALIDATION -> positive number with fd // control to check if file(buffer) can't be open -> return -1) // Size Buffer_size 0 or negative
 	if (fd < 0 || BUFFER_SIZE <= 0)
+	{
+		free (buffer);
+		buffer = NULL;
 		return (NULL);
+	}
 	buffer = read_file(fd, buffer);
 	// VALIDATION
-	if (buffer == NULL)
+	if (!buffer)
 		return (NULL);
 	// CONSEGUIR LINEA NETA CON SALTO LINEA INCLUIDO
 	next_line = give_line(buffer);
@@ -50,7 +53,7 @@ char	*get_next_line(int fd)
 * @returns -> Si check es correcto, devuelve linea texto restante.
 Si check es incorrecto, devuelve NULL.
 */
-static char	*get_final_line(char *buffer)
+static char	*get_final_line(char *total_line)
 {	
 	int	index_buffer; 
 	int len_buffer;
@@ -60,16 +63,16 @@ static char	*get_final_line(char *buffer)
 	index_buffer = 0;
 	index_final_line = 0;
 	// LLEGAR HASTA SALTO LINEA
-	while (buffer[index_buffer] != '\0' && buffer[index_buffer] != '\n')
+	while (total_line[index_buffer] != '\0' && total_line[index_buffer] != '\n')
 		index_buffer++;
 	//VALIDACION BUFFER -> si no hay nadxa despues del salto linea
-	if (!buffer[index_buffer])
+	if (!total_line[index_buffer])
 	{
-		free(buffer);
+		free(total_line);
 		return (NULL);
 	}
 	// CALCULAR TAMAÑO RESTANTE NUM CHARS HASTA FINAL BUFFER
-	len_buffer = ft_strlen(buffer);
+	len_buffer = ft_strlen(total_line);
 	// RESERVA MEMORIA TAMAÑO (TOTAL - INDEX + '\0')
 	final_line = ft_calloc(len_buffer - index_buffer + 1, sizeof(char));
 	// VALIDACION CONTROL
@@ -78,14 +81,14 @@ static char	*get_final_line(char *buffer)
 	// incrementar indice para no copiar salto linea
 	index_buffer++;
 	// COPIAR CHARS BUFFER DESDE '\n' en FINAL_LINE
-	while (buffer[index_buffer] != '\0')
+	while (total_line[index_buffer] != '\0')
 	{
-		final_line[index_final_line] = buffer[index_buffer];
+		final_line[index_final_line] = total_line[index_buffer];
 		index_buffer++;
 		index_final_line++;
 	}
 	final_line[index_final_line] = '\0';
-	free(buffer);
+	free(total_line);
 	return (final_line);
 }
 
@@ -114,6 +117,9 @@ static char	*give_line(char *buffer)
 		return (NULL);
 	// copiar en newline la linea bruta hasta el indice + salto linea incluido +  terminado nulo
 	ft_strlcpy(new_line, buffer, index + 1 + 1);
+
+	//new_line = ft_strncpy(new_line, buffer, index + 1);
+
 	return (new_line);	
 }
 
@@ -130,10 +136,11 @@ static char	*read_file(int	fd, char *text)
 	char	*buffer;
 
 	// VALIDACION 
-	if (!text)
-		text = ft_calloc(1, 1);
+	if (text == NULL)
+		text = ft_calloc(1, 1); // string con terminador nulo '/0'
 	// RESERVA MEMORIA EN BUFFER
 	buffer = ft_calloc((BUFFER_SIZE + 1), sizeof(char));
+	//buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
 	// validacion reserva memoria
 	if (!buffer)
 		return (NULL);
@@ -181,11 +188,11 @@ static char	*ft_joined(char	*buffer, char	*src)
 	return (dest);
 }
 
-int	main(void)
+/* int	main(void)
 {
 	int		fd = open("text_02.txt", O_RDONLY);
 	
-	/* int index_read;
+	int index_read;
 	char	*buffer;
 	char	*new_line;
 	char	*final_line;
@@ -206,14 +213,14 @@ int	main(void)
 
 	free(buffer);
 	free(new_line);
-	free(final_line); */
+	free(final_line);
 
 	// 4º TEST FUNCION GET_NEXT_LINE
 	char	*next_line;
-	while (next_line = get_next_line(fd))
+	while ((next_line = get_next_line(fd)))
 	{
 		printf("%s", next_line);
 		free(next_line);
 	}
 	return (0);
-}
+} */
