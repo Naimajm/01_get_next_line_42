@@ -6,16 +6,16 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 21:59:55 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/04 09:23:23 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/04 10:51:02 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static char	*get_final_line(char *buffer);
-static char	*give_line(char *buffer);
+static char	*get_final_part_line(char *buffer);
+static char	*get_cleaned_line(char *buffer);
 static char	*read_file(int	fd, char *text);
-static char	*ft_joined(char	*buffer, char	*src);
+static char	*ft_strjoin_buffer_src(char	*buffer, char	*src);
 
 /** 
 * @brief Comprueba si un carácter determinado es un carácter alfabético.
@@ -36,14 +36,15 @@ char	*get_next_line(int fd)
 		buffer = NULL;
 		return (NULL);
 	}
+	// CONSEGUIR LINEA BRUTA CON SALTO LINEA Y RESTO DEL BUFFER
 	buffer = read_file(fd, buffer);
 	// VALIDATION
 	if (!buffer)
 		return (NULL);
 	// CONSEGUIR LINEA NETA CON SALTO LINEA INCLUIDO
-	next_line = give_line(buffer);
+	next_line = get_cleaned_line(buffer);
 	// CONSEGUIR TEXTO DESDE SALTO LINEA
-	buffer = get_final_line(buffer);
+	buffer = get_final_part_line(buffer);
 	return (next_line);
 }
 
@@ -53,7 +54,7 @@ char	*get_next_line(int fd)
 * @returns -> Si check es correcto, devuelve linea texto restante.
 Si check es incorrecto, devuelve NULL.
 */
-static char	*get_final_line(char *total_line)
+static char	*get_final_part_line(char *total_line)
 {	
 	int	index_buffer; 
 	int len_buffer;
@@ -98,7 +99,7 @@ static char	*get_final_line(char *total_line)
 * @returns -> Si check es correcto, devuelve linea texto neta.
 Si check es incorrecto, devuelve NULL.
 */
-static char	*give_line(char *buffer)
+static char	*get_cleaned_line(char *buffer)
 {
 	int	index;
 	char	*new_line;
@@ -123,18 +124,18 @@ static char	*give_line(char *buffer)
 /** 
 * @brief Copia linea completa hasta salto linea '\n' en buffers con tamaño BUFFER_SIZE.
 * @param fd		fd: identicador id del file descriptor.
-* @param text	*text: texto .
+* @param text	*total_line: texto .
 * @returns -> Si check es correcto, devuelve linea texto en bruto.
 Si check es incorrecto, devuelve NULL.
 */
-static char	*read_file(int	fd, char *text)
+static char	*read_file(int	fd, char *total_line)
 {
-	int	char_to_read;  // indice caracter donde se ha quedado la lectura del archivo de la funcion 'read'
+	int	char_to_read;  // caracter donde se ha quedado la lectura del archivo de la funcion 'read'
 	char	*buffer;
 
 	// VALIDACION 
-	if (text == NULL)
-		text = ft_calloc(1, 1); // string con terminador nulo '/0'
+	if (total_line == NULL)
+		total_line = ft_calloc(1, 1); // string con terminador nulo '/0'
 	// RESERVA MEMORIA EN BUFFER
 	buffer = ft_calloc((BUFFER_SIZE + 1), sizeof(char));
 	//buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
@@ -150,37 +151,37 @@ static char	*read_file(int	fd, char *text)
 		// VALIDACION -> NO LECTURA DE CARACTERES O FINAL TEXTO
 		if (char_to_read == -1)
 		{
-			free(text);
+			free(total_line);
 			free(buffer);
 			return (NULL);
 		}
 		buffer[char_to_read] = '\0'; // terminador nulo string
 		//printf("%d -> %s \n", char_to_read, buffer);
 		// GUARDA CONTENIDO BUFFER + EL RESTO DE TEXTO ANTERIOR EN NUEVO CHAR!!!
-		text = ft_joined(text, buffer);
+		total_line = ft_strjoin_buffer_src(total_line, buffer);
 		// CONDICION -> CORTA CUANDO SE ENCUENTRE CARACTER SALTO LINEA '\N' EN EL TEXTO
-		if (ft_strchr(text, '\n'))
+		if (ft_strchr(total_line, '\n'))
 			break ;
 	}
 	free(buffer);
-	return (text);	
+	return (total_line);	
 }
 
 /** 
 * @brief Une en nuevo string los caracteres del buffer y del string 'src'.
 Libera bufffer despues de la union.
 * @param char	*buffer: string para almacenamiento temporal .
-* @param char	*text: string.
+* @param char	*partial_line: string.
 * @returns -> char *-> devuelve string con la union de ambos string.
 Si check es incorrecto, devuelve NULL.
 */
-static char	*ft_joined(char	*buffer, char	*src)
+static char	*ft_strjoin_buffer_src(char	*buffer, char	*partial_line)
 {
 	char	*dest;
 	
-	if (!buffer && !src)
+	if (!buffer && !partial_line)
 		return (NULL);
-	dest = ft_strjoin(buffer, src);
+	dest = ft_strjoin(buffer, partial_line);
 	free(buffer);
 	return (dest);
 }

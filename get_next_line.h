@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 20:19:01 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/04 09:23:59 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/04 10:52:28 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@
 #include <stdlib.h> // malloc(), free()
 #include <unistd.h> // sleep write read
 
-#include <stdio.h> // printf (DESARROLLO)
+#include <stdio.h> // printf (solo para DESARROLLO)
 
 // INTERNAL FUNCTIONS 'get_next_line.c' ----------------------------
 
@@ -71,7 +71,7 @@ char	*ft_strjoin(char const *str1, char const *str2);
 * @param str: puntero a la cadena terminada en nulo.
 * @returns int -> longitud de la cadena de entrada, excluyendo '\0'
 */
-int	ft_strlen(const char	*str);
+int	ft_strlen(const char *str);
 
 /** 
 * @brief Busca la primera aparición de un carácter específico en una cadena.
