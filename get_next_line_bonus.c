@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 11:43:00 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/04 13:00:26 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/04 13:45:22 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,40 +117,45 @@ char	*get_next_line(int fd)
 	return (next_line);
 }
 
-/* int	main(void)
+/* int main(void) 
 {
-	int		fd = open("text_02.txt", O_RDONLY);
+    int     fd_0;
+    int     fd_1;
+    int     fd_2;
+    char    *next_line;
+    int     count_line;
+
+    count_line = 0;
+    fd_0 = open("text_00.txt", O_RDONLY);
+    fd_1 = open("text_01.txt", O_RDONLY);
+    fd_2 = open("text_02.txt", O_RDONLY);
 	
-	int index_read;
-	char	*buffer;
-	char	*new_line;
-	char	*final_line;
+    if (fd_0 == -1 || fd_1 == -1 || fd_2 == -1) 
+    {
+        printf("Error al abrir archivo");
+        return (1);
+    }
 
-	// 1º COPIAR LINEA COMPLETA HASTA L BUFFER QUE 
-	INCLUYE SALTO LINEA -> READ_FILE()
-	index_read = read(fd, malloc(10 + 1), 10);
-	buffer = read_file(fd, buffer);
-	//printf("tamaño buffer -> %d \n", index_read);
-	//printf("Linea bruta -> %s<-final\n", buffer);
+    while ((next_line = get_next_line(fd_0))) {
+        count_line++;
+        printf("[%d]-> %s\n", count_line, next_line);
+        free(next_line);
+    }
+    while ((next_line = get_next_line(fd_1))) {
+        count_line++;
+        printf("[%d]-> %s\n", count_line, next_line);
+        free(next_line);
+    }
+    while ((next_line = get_next_line(fd_2))) {
+        count_line++;
+        printf("[%d]-> %s\n", count_line, next_line);
+        free(next_line);
+    }
 
-	// 2º CONSEGUIR LINEA NETA HASTA SALTO LINEA -> GIVE_LINE()
-	new_line = give_line(buffer);
-	//printf("Linea neta -> %s \n", new_line);
-
-	// 3º CONSEGUIR FINAL LINEA TEXTO DESPUES DE SALTO LINEA
-	final_line = get_final_line(buffer);
-	printf("final linea -> %s \n", final_line);
-
-	free(buffer);
-	free(new_line);
-	free(final_line);
-
-	// 4º TEST FUNCION GET_NEXT_LINE
-	char	*next_line;
-	while ((next_line = get_next_line(fd)))
+    if ((close(fd_0) == -1) || (close(fd_1) == -1) || (close(fd_2) == -1))
 	{
-		printf("%s", next_line);
-		free(next_line);
-	}
-	return (0);
+        printf("Error al cerrar archivo");
+        return (1);
+    }
+    return (0);
 } */

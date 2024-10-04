@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 21:59:55 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/04 13:00:29 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/04 13:45:20 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,7 +177,7 @@ char	*get_next_line(int fd)
 
 /* int	main(void)
 {
-	int		fd = open("text_02.txt", O_RDONLY);
+	int		fd = open("text_00.txt", O_RDONLY);
 	
 	int index_read;
 	char	*buffer;
@@ -202,12 +202,26 @@ char	*get_next_line(int fd)
 	free(new_line);
 	free(final_line);
 
-	// 4º TEST FUNCION GET_NEXT_LINE
+	// 4º TEST FUNCION GET_NEXT_LINE COMPLETA
 	char	*next_line;
+	int     count_line;
+
+	count_line = 0;
+	if (fd == -1) 
+    {
+        printf("Error al abrir archivo");
+        return (1);
+    }
 	while ((next_line = get_next_line(fd)))
 	{
-		printf("%s", next_line);
+		count_line++;
+		printf("[%d]-> %s\n",count_line, next_line);
 		free(next_line);
 	}
+	if (close(fd) == -1)
+	{
+        printf("Error al cerrar archivo");
+        return (1);
+    }
 	return (0);
 } */
