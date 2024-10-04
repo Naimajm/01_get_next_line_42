@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 21:59:55 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/04 13:45:20 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/04 20:43:47 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,7 +175,9 @@ char	*get_next_line(int fd)
 	return (next_line);
 }
 
-/* int	main(void)
+/* # include <stdio.h>
+
+int	main(void)
 {
 	int		fd = open("text_00.txt", O_RDONLY);
 	

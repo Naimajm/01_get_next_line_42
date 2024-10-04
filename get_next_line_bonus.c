@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 11:43:00 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/04 13:45:22 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/04 20:42:39 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,103 @@ char	*get_next_line(int fd)
 	return (next_line);
 }
 
-/* int main(void) 
+/* // VERSION LECTURA EN CADENA ARCHIVOS -> 1 LINEA POR CADA ARCHIVO
+# include <stdio.h>
+int main(int argc, char **argv)
+{
+	static char **lines;
+	int *fds;
+	int index_fds;
+	int	count_line;
+	int line_remaining_to_read_flag;	
+
+	// VALIDACION NUJMERO ARCHIVOS MAYOR QUE 2
+	if (argc < 2)
+	{
+		printf("Uso: %s \n Se necesitan mas archivos para testeo", argv[1]);
+		return (1);
+	}
+
+	// RESERVA MEMORIA PARA LISTA FILES DESCRIPTORS + VARIABLE ESTATICA LINEAS
+	fds = malloc((argc - 1) * sizeof(int));
+	lines = malloc((argc - 1) * sizeof(char *));
+	if (!fds || !lines)
+	{
+		printf("error reserva memoria -> malloc");
+		return (1);
+	}
+
+	// GUARDAR RELACION FILES DESCRIPTORS de ARCHIVOS ABIERTOS
+	index_fds = 0;
+	while (index_fds < (argc - 1))
+	{
+		fds[index_fds] = open(argv[index_fds + 1], O_RDONLY);
+		// VALIDACION FUNCION APERTURA ARCHIVOS
+		if (fds[index_fds] == -1)
+		{
+			printf("error funcion open");
+			return (1);
+		}
+		printf("lista [%i]: archivo %s -> file descryptor: %i \n", index_fds, argv[index_fds + 1], fds[index_fds]);
+		index_fds++;
+	}
+	printf("\n ------------------ \n");
+
+	// 1º GUARDAR PRIMERA LINEA PARA DE CADA FILE DESCRIPTOR -------------
+	index_fds = 0;	
+	while ((index_fds < (argc - 1)))
+	{		
+		lines[index_fds] = get_next_line(fds[index_fds]);
+		index_fds++;
+	}
+
+	// 2º -> IMPRIMIR 1º LINEA GUARDADA + ITERAR E IMPRIMIR SOBRE LAS SIGUIENTES FDS ------
+	count_line = 1;
+	line_remaining_to_read_flag = 1; 
+	while (line_remaining_to_read_flag > 0)
+	{
+		line_remaining_to_read_flag = 0;
+		index_fds = 0;
+		
+		// CICLO DE LECTURA E IMPRESION DE 1 LINEA POR CADA FILE DESCRIPTOR
+		while (index_fds < (argc - 1))
+		{
+			// 2º -> EXISTE 1º LINEA DEL FD ACTIVO -> IMPRIME Y CONSIGUE SIGUIENTE LINEA de ese FD
+			if (lines[index_fds])
+			{
+				// imprimir linea							
+				printf("fd:[%d] line:[%d]-> %s\n", fds[index_fds], count_line, lines[index_fds]);				
+				free(lines[index_fds]);
+				count_line++;
+				
+				// conseguir siguiente linea fd actual
+				lines[index_fds] = get_next_line(fds[index_fds]);
+				
+				// SI EXISTE LINEA -> REINICIA CONTADOR PARA REINICIAR 1º BUCLE
+				if (lines[index_fds])
+					line_remaining_to_read_flag = 1;				
+			}			
+			index_fds++;			
+		}
+	}
+	
+	// CERRAR ARCHIVOS -------------------------------
+	index_fds = 0;
+	while (index_fds < (argc - 1))
+	{
+		close(fds[index_fds]);
+		index_fds++;
+	}
+	// LIBERAR LIST FDS Y MATRIZ DE STRINGS -----------
+	free(fds);
+	free(lines);
+	return (0);
+} */
+
+/* 
+// VERSION LECTURA EN CADENA ARCHIVOS
+# include <stdio.h>
+int main(void) 
 {
     int     fd_0;
     int     fd_1;
@@ -150,8 +246,7 @@ char	*get_next_line(int fd)
         count_line++;
         printf("[%d]-> %s\n", count_line, next_line);
         free(next_line);
-    }
-
+    }	
     if ((close(fd_0) == -1) || (close(fd_1) == -1) || (close(fd_2) == -1))
 	{
         printf("Error al cerrar archivo");

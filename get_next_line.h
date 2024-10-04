@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 20:19:01 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/04 10:52:28 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/04 14:05:46 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,6 @@
 #include <fcntl.h> // open
 #include <stdlib.h> // malloc(), free()
 #include <unistd.h> // sleep write read
-
-#include <stdio.h> // printf (solo para DESARROLLO)
 
 // INTERNAL FUNCTIONS 'get_next_line.c' ----------------------------
 
