@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 21:59:55 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/03 22:43:32 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/04 09:23:23 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ static char	*get_final_line(char *total_line)
 	// LLEGAR HASTA SALTO LINEA
 	while (total_line[index_buffer] != '\0' && total_line[index_buffer] != '\n')
 		index_buffer++;
-	//VALIDACION BUFFER -> si no hay nadxa despues del salto linea
+	//VALIDACION BUFFER -> si no hay nada despues del salto linea
 	if (!total_line[index_buffer])
 	{
 		free(total_line);
@@ -117,9 +117,6 @@ static char	*give_line(char *buffer)
 		return (NULL);
 	// copiar en newline la linea bruta hasta el indice + salto linea incluido +  terminado nulo
 	ft_strlcpy(new_line, buffer, index + 1 + 1);
-
-	//new_line = ft_strncpy(new_line, buffer, index + 1);
-
 	return (new_line);	
 }
 

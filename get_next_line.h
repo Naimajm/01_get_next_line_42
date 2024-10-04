@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 20:19:01 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/03 22:01:03 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/04 09:23:59 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,9 +41,6 @@ Devuelve la longitud de la cadena fuente.
 * @returns unsigned int -> longitud de la cadena de origen.
 */
 int	ft_strlcpy(char *dest, const char *src, unsigned int destsize);
-
-
-//char	*ft_strncpy(char *dest, const char *src, size_t n);
 
 /** 
 * @brief Asigna memoria para una matriz de elementos con un recuento
