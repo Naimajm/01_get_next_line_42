@@ -6,47 +6,11 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 21:59:55 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/04 11:26:41 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/04 13:00:29 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-
-static char	*get_final_part_line(char *buffer);
-static char	*get_cleaned_line(char *buffer);
-static char	*read_file(int	fd, char *text);
-static char	*ft_strjoin_buffer_src(char	*buffer, char	*src);
-
-/** 
-* @brief Comprueba si un carácter determinado es un carácter alfabético.
-* @param charac: carácter a comprobar.
-* @returns -> Si check es correcto, devuelve valor distinto de cero.
-Si check es incorrecto, devuelve 0.
-*/
-char	*get_next_line(int fd)
-{
-	// VARIABLE ESTATICA !! FINAL VIDEO https://www.youtube.com/watch?v=8E9siq7apUU&ab_channel=Oceano
-	static char	*buffer;
-	char	*next_line; 
-
-	// VALIDATION -> positive number with fd // control to check if file(buffer) can't be open -> return -1) // Size Buffer_size 0 or negative
-	if (fd < 0 || BUFFER_SIZE <= 0)
-	{
-		free (buffer);
-		buffer = NULL;
-		return (NULL);
-	}
-	// CONSEGUIR LINEA BRUTA CON SALTO LINEA Y RESTO DEL BUFFER
-	buffer = read_file(fd, buffer);
-	// VALIDATION
-	if (!buffer)
-		return (NULL);
-	// CONSEGUIR LINEA NETA CON SALTO LINEA INCLUIDO
-	next_line = get_cleaned_line(buffer);
-	// CONSEGUIR TEXTO DESDE SALTO LINEA
-	buffer = get_final_part_line(buffer);
-	return (next_line);
-}
 
 /** 
 * @brief Conseguir linea texto desde salto linea incluida hasta final del buffer.
@@ -117,6 +81,25 @@ static char	*get_cleaned_line(char *buffer)
 }
 
 /** 
+* @brief Une en nuevo string los caracteres del buffer y del string 'src'.
+Libera bufffer despues de la union.
+* @param char	*buffer: string para almacenamiento temporal .
+* @param char	*partial_line: string.
+* @returns -> char *-> devuelve string con la union de ambos string.
+Si check es incorrecto, devuelve NULL.
+*/
+static char	*ft_strjoin_buffer_src(char	*buffer, char	*partial_line)
+{
+	char	*dest;
+	
+	if (!buffer && !partial_line)
+		return (NULL);
+	dest = ft_strjoin(buffer, partial_line);
+	free(buffer);
+	return (dest);
+}
+
+/** 
 * @brief Copia linea completa hasta salto linea '\n' en buffers con tamaño BUFFER_SIZE.
 * @param fd		fd: identicador id del file descriptor.
 * @param text	*total_line: texto .
@@ -133,7 +116,6 @@ static char	*read_file(int	fd, char *total_line)
 		total_line = ft_calloc(1, 1); // string con terminador nulo '/0'
 	// RESERVA MEMORIA EN BUFFER
 	buffer = ft_calloc((BUFFER_SIZE + 1), sizeof(char));
-	//buffer = malloc((BUFFER_SIZE + 1) * sizeof(char));
 	// validacion reserva memoria
 	if (!buffer)
 		return (NULL);
@@ -163,22 +145,34 @@ static char	*read_file(int	fd, char *total_line)
 }
 
 /** 
-* @brief Une en nuevo string los caracteres del buffer y del string 'src'.
-Libera bufffer despues de la union.
-* @param char	*buffer: string para almacenamiento temporal .
-* @param char	*partial_line: string.
-* @returns -> char *-> devuelve string con la union de ambos string.
-Si check es incorrecto, devuelve NULL.
+* @brief Comprueba si un carácter determinado es un carácter alfabético.
+* @param charac: carácter a comprobar.
+* @returns -> Si check es correcto, devuelve valor distinto de cero.
+Si check es incorrecto, devuelve 0.
 */
-static char	*ft_strjoin_buffer_src(char	*buffer, char	*partial_line)
+char	*get_next_line(int fd)
 {
-	char	*dest;
-	
-	if (!buffer && !partial_line)
+	// VARIABLE ESTATICA !! FINAL VIDEO https://www.youtube.com/watch?v=8E9siq7apUU&ab_channel=Oceano
+	static char	*buffer;
+	char	*next_line; 
+
+	// VALIDATION -> positive number with fd // control to check if file(buffer) can't be open -> return -1) // Size Buffer_size 0 or negative
+	if (fd < 0 || BUFFER_SIZE <= 0)
+	{
+		free (buffer);
+		buffer = NULL;
 		return (NULL);
-	dest = ft_strjoin(buffer, partial_line);
-	free(buffer);
-	return (dest);
+	}
+	// CONSEGUIR LINEA BRUTA CON SALTO LINEA Y RESTO DEL BUFFER
+	buffer = read_file(fd, buffer);
+	// VALIDATION
+	if (!buffer)
+		return (NULL);
+	// CONSEGUIR LINEA NETA CON SALTO LINEA INCLUIDO
+	next_line = get_cleaned_line(buffer);
+	// CONSEGUIR TEXTO DESDE SALTO LINEA
+	buffer = get_final_part_line(buffer);
+	return (next_line);
 }
 
 /* int	main(void)
