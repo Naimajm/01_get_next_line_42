@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 21:59:55 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/04 10:51:02 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/04 11:26:41 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,9 @@ Si check es incorrecto, devuelve NULL.
 */
 static char	*get_final_part_line(char *total_line)
 {	
-	int	index_buffer; 
-	int len_buffer;
-	int	index_final_line;
-	char *final_line;
+	int		index_buffer;
+	int		index_final_line;
+	char	*final_line;
 
 	index_buffer = 0;
 	index_final_line = 0;
@@ -72,19 +71,15 @@ static char	*get_final_part_line(char *total_line)
 		free(total_line);
 		return (NULL);
 	}
-	// CALCULAR TAMAÑO RESTANTE NUM CHARS HASTA FINAL BUFFER
-	len_buffer = ft_strlen(total_line);
 	// RESERVA MEMORIA TAMAÑO (TOTAL - INDEX + '\0')
-	final_line = ft_calloc(len_buffer - index_buffer + 1, sizeof(char));
+	final_line = ft_calloc(ft_strlen(total_line) - index_buffer + 1, sizeof(char));
 	// VALIDACION CONTROL
 	if(!final_line)
 		return (NULL);
-	// incrementar indice para no copiar salto linea
-	index_buffer++;
 	// COPIAR CHARS BUFFER DESDE '\n' en FINAL_LINE
 	while (total_line[index_buffer] != '\0')
 	{
-		final_line[index_final_line] = total_line[index_buffer];
+		final_line[index_final_line] = total_line[index_buffer + 1]; // incrementar indice para no copiar salto linea
 		index_buffer++;
 		index_final_line++;
 	}
