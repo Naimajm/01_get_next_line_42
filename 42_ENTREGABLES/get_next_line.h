@@ -6,7 +6,7 @@
 /*   By: juagomez <juagomez@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/27 20:19:01 by juagomez          #+#    #+#             */
-/*   Updated: 2024/10/04 11:39:59 by juagomez         ###   ########.fr       */
+/*   Updated: 2024/10/04 14:04:20 by juagomez         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@
 # include <fcntl.h>
 # include <stdlib.h>
 # include <unistd.h>
-
-# include <stdio.h>
 
 char	*get_next_line(int fd);
 int		ft_strlcpy(char *dest, const char *src, unsigned int destsize);
